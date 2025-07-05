@@ -13,7 +13,7 @@ const contactsSchema = new Schema(
     email: {
       type: String,
     },
-    isFinite: {
+    isFavourite: {
       type: Boolean,
       default: false,
     },
