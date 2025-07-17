@@ -9,15 +9,17 @@ import {
 } from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
+import { isValidId } from '../middlewares/isValidId.js';
+
 const router = Router();
 
 router.get('/', ctrlWrapper(getContactController));
-router.get('/:id', ctrlWrapper(getContactByIdController));
+router.get('/:id', isValidId, ctrlWrapper(getContactByIdController));
 
 router.post('/', ctrlWrapper(createContactController));
 
-router.delete('/:id', ctrlWrapper(deleteContactController));
+router.delete('/:id', isValidId, ctrlWrapper(deleteContactController));
 
-router.patch('/:id', ctrlWrapper(patchContactController));
+router.patch('/:id', isValidId, ctrlWrapper(patchContactController));
 
 export default router;
