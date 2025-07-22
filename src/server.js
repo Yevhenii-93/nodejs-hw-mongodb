@@ -2,6 +2,7 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 
+import authRoutes from './routers/auth.js';
 import { getEnvVar } from './utils/getEnvVar.js';
 import contactRouter from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -23,6 +24,7 @@ export const setupServer = () => {
     }),
   );
 
+  app.use('/auth', authRoutes);
   app.use('/contacts', contactRouter);
 
   app.use(notFoundHandler);
