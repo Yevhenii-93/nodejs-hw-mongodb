@@ -1,10 +1,10 @@
-import { registerUser } from '../services/user.js';
+import { registerUser } from '../services/auth.js';
 
-export const registerController = async (res, req) => {
+export const registerController = async (req, res) => {
   const user = await registerUser(req.body);
 
   res.status(201).json({
-    status: 200,
+    status: 201,
     message: 'Successfully registered a user!',
     data: user,
   });

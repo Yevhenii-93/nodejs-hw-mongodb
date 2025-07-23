@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     password: {
-      type: true,
+      type: String,
       required: true,
     },
   },
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.toJSON = function () {
-  const obj = this.obj;
+  const obj = this.toObject();
   delete obj.password;
   return obj;
 };
