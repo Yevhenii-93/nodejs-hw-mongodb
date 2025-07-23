@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import bcrypt from 'bcrypt';
 
 import { User } from '../db/models/user.js';
+import { Session } from '../db/models/session.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -13,4 +14,28 @@ export const registerUser = async (payload) => {
   payload.password = await bcrypt.hash(payload.password, 10);
 
   return User.create(payload);
+};
+
+export const userLogin = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.Unauthorized('Email or password is incorrect');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (isMatch !== true) {
+    throw new createHttpError.Unauthorized('Email or password is incorrect');
+  }
+
+  await Session.deleteOne({ userId: user._id });
+
+  return Session.create({
+    userId: user._id,
+    accessToken: 'ACCESS TOKEN',
+    refreshToken: 'REFRESH TOKEN',
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+  });
 };
