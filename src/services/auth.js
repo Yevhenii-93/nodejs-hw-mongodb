@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
 
 import { User } from '../db/models/user.js';
@@ -33,8 +34,8 @@ export const userLogin = async (email, password) => {
 
   return Session.create({
     userId: user._id,
-    accessToken: 'ACCESS TOKEN',
-    refreshToken: 'REFRESH TOKEN',
+    accessToken: crypto.randomBytes(30).toString('base64'),
+    refreshToken: crypto.randomBytes(30).toString('base64'),
     accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
