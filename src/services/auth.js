@@ -40,3 +40,7 @@ export const userLogin = async (email, password) => {
     refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 };
+
+export const userLogout = async (sessionId) => {
+  await Session.deleteOne({ _id: sessionId });
+};
