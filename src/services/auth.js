@@ -93,12 +93,16 @@ export const requestPasswordReset = async (email) => {
     { expiresIn: '5m' },
   );
 
-  await sendMail({
-    from: getEnvVar(SMTP.SMTP_FROM),
-    to: email,
-    subject: 'Reset your password',
-    html: `<p>Click <a href="${'APP_DOMAIN'}/reset-password/${token}" >here</a> to reset your password</p>`,
-  });
-
-  console.log(token);
+  try {
+    await sendMail({
+      from: getEnvVar(SMTP.SMTP_FROM),
+      to: email,
+      subject: 'Reset your password',
+      html: `<p>Click <a href="${'APP_DOMAIN'}/reset-password/${token}" >here</a> to reset your password</p>`,
+    });
+  } catch {
+    throw new createHttpError.InternalServerError(
+      'Failed to send the email, please try again later',
+    );
+  }
 };
