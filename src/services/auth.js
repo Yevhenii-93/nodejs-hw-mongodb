@@ -6,7 +6,9 @@ import jwt from 'jsonwebtoken';
 import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
 
+import { sendMail } from '../utils/sendMail.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
+import { SMTP } from '../contacts/index.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -85,10 +87,18 @@ export const requestPasswordReset = async (email) => {
     {
       sub: user._id,
       name: user.name,
+      email,
     },
     getEnvVar('SECRET_JWT'),
     { expiresIn: '5m' },
   );
+
+  await sendMail({
+    from: getEnvVar(SMTP.SMTP_FROM),
+    to: email,
+    subject: 'Reset your password',
+    html: `<p>Click <a href="${'APP_DOMAIN'}/reset-password/${token}" >here</a> to reset your password</p>`,
+  });
 
   console.log(token);
 };
