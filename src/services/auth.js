@@ -70,3 +70,13 @@ export const refreshUser = async (sessionId, refreshToken) => {
     refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 };
+
+export const requestPasswordReset = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.NotFound('User not found!');
+  }
+
+  console.log(user);
+};
