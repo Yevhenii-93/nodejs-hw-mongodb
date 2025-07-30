@@ -1,9 +1,12 @@
 import createHttpError from 'http-errors';
 import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
+
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -78,5 +81,14 @@ export const requestPasswordReset = async (email) => {
     throw new createHttpError.NotFound('User not found!');
   }
 
-  console.log(user);
+  const token = jwt.sign(
+    {
+      sub: user._id,
+      name: user.name,
+    },
+    getEnvVar('SECRET_JWT'),
+    { expiresIn: '5m' },
+  );
+
+  console.log(token);
 };

@@ -30,7 +30,7 @@ router.post('/logout', ctrlWrapper(logoutController));
 router.post('/refresh', ctrlWrapper(refreshController));
 
 router.post(
-  '/reset-pwd',
+  '/send-reset-email',
   validateBody(requestPasswordResetSchema),
   ctrlWrapper(requestPasswordResetController),
 );
