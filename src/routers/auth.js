@@ -8,11 +8,13 @@ import {
   logoutController,
   refreshController,
   requestPasswordResetController,
+  passwordResetController,
 } from '../controllers/auth.js';
 import {
   registerSchema,
   loginSchema,
   requestPasswordResetSchema,
+  passwordResetSchema,
 } from '../validation/auth.js';
 
 const router = express.Router();
@@ -35,4 +37,9 @@ router.post(
   ctrlWrapper(requestPasswordResetController),
 );
 
+router.post(
+  '/reset-pwd',
+  validateBody(passwordResetSchema),
+  ctrlWrapper(passwordResetController),
+);
 export default router;

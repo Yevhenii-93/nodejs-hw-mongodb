@@ -98,11 +98,34 @@ export const requestPasswordReset = async (email) => {
       from: getEnvVar(SMTP.SMTP_FROM),
       to: email,
       subject: 'Reset your password',
-      html: `<p>Click <a href="${'APP_DOMAIN'}/reset-password/${token}" >here</a> to reset your password</p>`,
+      html: `<p>Click <a href="${getEnvVar(
+        'APP_DOMAIN',
+      )}/reset-password?token=${token}" >here</a> to reset your password</p>`,
     });
   } catch {
     throw new createHttpError.InternalServerError(
       'Failed to send the email, please try again later',
     );
+  }
+};
+
+export const resetPassword = async (token, password) => {
+  try {
+    const decoded = jwt.verify(token, getEnvVar('SECRET_JWT'));
+
+    const user = User.findById(decoded.sub);
+
+    if (user === null) {
+      throw new createHttpError.NotFound('User not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Token is expired or invalid');
+    }
+    throw err;
   }
 };
