@@ -1,3 +1,8 @@
+import path from 'node:path';
+
+export const TEMP_UPLOAD_DIR = path.resolve('src', 'temp');
+export const UPLOAD_DIR = path.resolve('src', 'uploads');
+
 export const SMTP = {
   SMTP_HOST: 'SMTP_HOST',
   SMTP_PORT: 'SMTP_PORT',
