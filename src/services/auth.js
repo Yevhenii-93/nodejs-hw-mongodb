@@ -1,9 +1,14 @@
 import createHttpError from 'http-errors';
 import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
+
+import { sendMail } from '../utils/sendMail.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
+import { SMTP } from '../contacts/index.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -69,4 +74,58 @@ export const refreshUser = async (sessionId, refreshToken) => {
     accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
+};
+
+export const requestPasswordReset = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.NotFound('User not found!');
+  }
+
+  const token = jwt.sign(
+    {
+      sub: user._id,
+      name: user.name,
+      email,
+    },
+    getEnvVar('SECRET_JWT'),
+    { expiresIn: '5m' },
+  );
+
+  try {
+    await sendMail({
+      from: getEnvVar(SMTP.SMTP_FROM),
+      to: email,
+      subject: 'Reset your password',
+      html: `<p>Click <a href="${getEnvVar(
+        'APP_DOMAIN',
+      )}/reset-password?token=${token}" >here</a> to reset your password</p>`,
+    });
+  } catch {
+    throw new createHttpError.InternalServerError(
+      'Failed to send the email, please try again later',
+    );
+  }
+};
+
+export const resetPassword = async (token, password) => {
+  try {
+    const decoded = jwt.verify(token, getEnvVar('SECRET_JWT'));
+
+    const user = User.findById(decoded.sub);
+
+    if (user === null) {
+      throw new createHttpError.NotFound('User not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Token is expired or invalid');
+    }
+    throw err;
+  }
 };
