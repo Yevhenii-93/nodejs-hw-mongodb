@@ -12,8 +12,8 @@ tags:
   - name: Auth
     description: Auth operations.
 servers:
-  - url: https://nodejs-hw-mongodb-7qfr.onrender.com
   - url: http://127.0.0.1:8080
+  - url: https://nodejs-hw-mongodb-7qfr.onrender.com
 paths:
   /contacts:
     get:
