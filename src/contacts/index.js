@@ -1,7 +1,11 @@
 import path from 'node:path';
+import * as fs from 'node:fs';
 
 export const TEMP_UPLOAD_DIR = path.resolve('src', 'temp');
 export const UPLOAD_DIR = path.resolve('src', 'uploads', 'photo');
+export const SWAGGER_DOC = JSON.parse(
+  fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
+);
 
 export const SMTP = {
   SMTP_HOST: 'SMTP_HOST',
