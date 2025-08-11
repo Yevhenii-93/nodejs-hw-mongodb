@@ -28,21 +28,6 @@ parameters:
       type: string
       enum: ['asc', 'desc']
       example: 'asc'
-  - in: query
-    name: name
-    description: partial match
-    schema:
-      type: string
-  - in: query
-    name: phoneNumber
-    description: partial match
-    schema:
-      type: string
-  - in: query
-    name: email
-    description: Filter by email
-    schema:
-      type: string
 responses:
   '200':
     description: Successfully found contacts!
