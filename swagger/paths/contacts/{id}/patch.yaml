@@ -1,11 +1,10 @@
 tags:
   - Contacts
-summary: Get contact by id
-operationId: getContact
-description: 'Get contact by id'
+summary: Patch contact
+operationId: patchContact
+description: Patched contact by id
 security:
   - bearerAuth: []
-
 parameters:
   - in: path
     name: id
@@ -13,10 +12,14 @@ parameters:
     schema:
       type: string
       example: '65ca67e7ae7f10c88b598384'
-
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        $ref: '../../../components/schemas/contact.yaml'
 responses:
   '200':
-    description: 'Get contact by id'
+    description: Successfully patched a contact!
     content:
       application/json:
         schema:
@@ -31,10 +34,10 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully found contact with id
+              example: Successfully patched a contact!
             data:
               type: object
-              $ref: ../../../components/schemas/contact.yaml
+              $ref: '../../../components/schemas/contact.yaml'
   '400':
     $ref: ../../../components/responses/400.yaml
   '401':
