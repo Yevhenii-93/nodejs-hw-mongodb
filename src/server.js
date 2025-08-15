@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import pino from 'pino-http';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 
 import authRoutes from './routers/auth.js';
 
@@ -11,6 +12,7 @@ import contactRouter from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { UPLOAD_DIR } from './contacts/index.js';
+import { SWAGGER_DOC } from './contacts/index.js';
 
 const PORT = Number(getEnvVar('PORT', '3000'));
 
@@ -29,6 +31,8 @@ export const setupServer = () => {
     }),
   );
   app.use(cookieParser());
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOC));
 
   app.use('/auth', authRoutes);
   app.use('/contacts', authenticate, contactRouter);
